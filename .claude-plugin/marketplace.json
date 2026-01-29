@@ -1,0 +1,24 @@
+{
+  "name": "goodalex223-claude-marketplace",
+  "owner": {
+    "name": "goodalex223"
+  },
+  "metadata": {
+    "description": "Personal Claude Code plugin marketplace by goodalex223. Plugins for learning English while coding.",
+    "version": "1.0.0"
+  },
+  "plugins": [
+    {
+      "name": "english-coach",
+      "source": "./plugins/english-coach",
+      "description": "Learn English naturally while using Claude Code. Detects errors, teaches grammar rules with Russian-language context, and guides self-correction through Socratic method.",
+      "version": "0.1.0",
+      "author": {
+        "name": "alexm"
+      },
+      "keywords": ["english", "learning", "grammar", "vocabulary", "education"],
+      "category": "education",
+      "tags": ["english", "language-learning", "grammar", "russian"]
+    }
+  ]
+}

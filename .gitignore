@@ -1,0 +1,17 @@
+# Claude Code local files
+.claude/*.local.md
+.claude/todos/
+
+# Progress data (user-specific)
+english-coach-progress.json
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+
+# Logs
+*.log

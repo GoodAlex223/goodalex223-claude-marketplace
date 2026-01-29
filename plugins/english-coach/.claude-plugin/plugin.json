@@ -1,0 +1,9 @@
+{
+  "name": "english-coach",
+  "version": "0.1.0",
+  "description": "Learn English naturally while using Claude Code. Detects errors, teaches grammar rules, and guides self-correction through Socratic method.",
+  "author": {
+    "name": "goodalex223"
+  },
+  "keywords": ["english", "learning", "grammar", "vocabulary", "education"]
+}
