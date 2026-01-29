@@ -1,12 +1,7 @@
 ---
-name: review
-description: >
-  Analyze your recent messages for English errors and get interactive coaching.
-  Use this skill when you want to manually review text for English errors, get grammar
-  feedback, or have the english-tutor agent analyze specific text you provide.
-  Applies to requests like "/english-coach:review", "review my English",
-  "check my grammar", or "analyze this text for errors".
-disable-model-invocation: true
+description: Analyze your recent messages for English errors and get interactive coaching
+argument-hint: "[optional: paste specific text to review]"
+allowed-tools: ["Task", "Read", "Write", "Glob"]
 ---
 
 The user wants their English reviewed. Launch the **english-tutor** agent to analyze the user's English.

@@ -54,10 +54,10 @@ Progress is stored at `~/.claude/english-coach-progress.json`. This file is crea
 | Error Detector | Hook (UserPromptSubmit) | Scans messages for English errors |
 | English Tutor | Agent | Interactive teaching in separate context |
 | English Teaching | Skill | Teaching methodology and grammar references |
-| /english-coach:review | Skill | Manual English review |
-| /english-coach:progress | Skill | Learning progress dashboard |
-| /english-coach:vocabulary | Skill | Vocabulary practice sessions |
-| /english-coach:exercise | Skill | Grammar exercises |
+| /english-coach:review | Command | Manual English review |
+| /english-coach:progress | Command | Learning progress dashboard |
+| /english-coach:vocabulary | Command | Vocabulary practice sessions |
+| /english-coach:exercise | Command | Grammar exercises |
 
 ## Installation
 
@@ -106,20 +106,17 @@ english-coach/
 │   └── hooks.json               # Error detection hook
 ├── agents/
 │   └── english-tutor.md         # Interactive tutor agent
+├── commands/
+│   ├── review.md                # /english-coach:review
+│   ├── progress.md              # /english-coach:progress
+│   ├── vocabulary.md            # /english-coach:vocabulary
+│   └── exercise.md              # /english-coach:exercise
 ├── skills/
-│   ├── english-teaching/
-│   │   ├── SKILL.md             # Teaching methodology
-│   │   └── references/
-│   │       ├── russian-english-errors.md
-│   │       ├── grammar-rules.md
-│   │       └── memorization-techniques.md
-│   ├── review/
-│   │   └── SKILL.md             # /english-coach:review
-│   ├── progress/
-│   │   └── SKILL.md             # /english-coach:progress
-│   ├── vocabulary/
-│   │   └── SKILL.md             # /english-coach:vocabulary
-│   └── exercise/
-│       └── SKILL.md             # /english-coach:exercise
+│   └── english-teaching/
+│       ├── SKILL.md             # Teaching methodology
+│       └── references/
+│           ├── russian-english-errors.md
+│           ├── grammar-rules.md
+│           └── memorization-techniques.md
 └── README.md
 ```

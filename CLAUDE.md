@@ -22,16 +22,13 @@ plugins/
   english-coach/              # Main English learning plugin
     agents/
       english-tutor.md        # Interactive tutoring agent (Socratic method)
+    commands/                 # User-facing slash commands (no name field → auto-prefixed)
+      review.md               # /english-coach:review
+      progress.md             # /english-coach:progress
+      vocabulary.md           # /english-coach:vocabulary
+      exercise.md             # /english-coach:exercise
     skills/
       english-teaching/       # Teaching methodology and techniques
-        SKILL.md
-      review/                 # /english-coach:review
-        SKILL.md
-      progress/               # /english-coach:progress
-        SKILL.md
-      vocabulary/             # /english-coach:vocabulary
-        SKILL.md
-      exercise/               # /english-coach:exercise
         SKILL.md
     hooks/                    # User prompt interception for error detection
     README.md
@@ -40,7 +37,7 @@ plugins/
 **Key Components**:
 - **english-tutor agent**: Launched when English errors detected; analyzes errors, explains grammar rules with Russian context, guides self-correction
 - **english-teaching skill**: Provides teaching methodology (Socratic method, hint graduation, memorization techniques, progress tracking)
-- **Skills (user-invocable)**: review, progress, vocabulary, exercise — all with `disable-model-invocation: true` to prevent auto-activation
+- **Commands**: review, progress, vocabulary, exercise — no `name` field in frontmatter so the system auto-prefixes with plugin namespace (/english-coach:*)
 - **Hooks**: UserPromptSubmit hook detects errors and triggers tutor agent
 <!-- END AUTO-MANAGED -->
 
@@ -104,7 +101,7 @@ plugins/
 claude --plugin-dir ./plugins/english-coach
 ```
 
-**Plugin Skills (user-invocable)**:
+**Plugin Commands**:
 ```bash
 /english-coach:review             # Review text for errors
 /english-coach:progress           # View learning progress
@@ -117,6 +114,7 @@ claude --plugin-dir ./plugins/english-coach
 
 <!-- AUTO-MANAGED: git-insights -->
 **Recent Decisions**:
+- `3440f8b`: Convert commands to skills for consistent namespace prefix - replaced commands/ directory with skills/ (review, progress, vocabulary, exercise) to ensure proper plugin namespace (/english-coach:*) and avoid command registration issues
 - `4cbd23f`: Agent model inheritance and skill naming consistency - switched agent to inherit model from context, standardized skill naming to kebab-case
 - `c8e774e`: Initial marketplace with english-coach plugin - established plugin structure with agents, skills, hooks, and commands
 <!-- END AUTO-MANAGED -->

@@ -1,12 +1,6 @@
 ---
-name: progress
-description: >
-  View your English learning progress, recurring mistakes, and improvement trends.
-  Use this skill when the user wants to see their learning dashboard, error statistics,
-  vocabulary growth, or improvement history. Applies to requests like
-  "/english-coach:progress", "show my progress", "how am I doing with English",
-  or "what are my common mistakes".
-disable-model-invocation: true
+description: View your English learning progress, recurring mistakes, and improvement trends
+allowed-tools: ["Read", "Glob"]
 ---
 
 The user wants to see their English learning progress. Read the progress data and present a comprehensive summary.
