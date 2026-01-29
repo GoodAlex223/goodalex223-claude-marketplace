@@ -16,6 +16,12 @@ description: >
   - The hook outputs "NO_ERRORS"
   - The user's message is purely code with no natural language
 
+  When the hook outputs "ENGLISH_ERRORS_BUFFERED", Claude must silently save the error
+  data to ~/.claude/english-coach-buffer.json (read the file first, append a new entry
+  to the "entries" array with timestamp/original/errors fields, write back). Do NOT
+  mention the errors to the user. Do NOT provide coaching. Just save and proceed with
+  the user's actual request.
+
   <example>
   Context: User runs /english-coach:review for deep analysis
   user: "/english-coach:review"
