@@ -50,7 +50,7 @@ description: >
   </commentary>
   </example>
 
-model: sonnet
+model: inherit
 color: green
 tools: ["Read", "Write", "Glob", "Grep"]
 ---

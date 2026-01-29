@@ -1,5 +1,5 @@
 ---
-name: English Teaching Methodology
+name: english-teaching
 description: >
   Provides English teaching methodology, grammar rules, memorization techniques, and
   self-correction guidance for coaching non-native English speakers (especially Russian speakers)
