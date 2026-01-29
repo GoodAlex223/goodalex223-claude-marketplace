@@ -1,8 +1,12 @@
 ---
 name: vocabulary
-description: Practice vocabulary from recent sessions and learn new technical English words
-argument-hint: "[optional: topic like 'git', 'api', 'testing']"
-allowed-tools: ["Read", "Write", "Glob"]
+description: >
+  Practice vocabulary from recent sessions and learn new technical English words.
+  Use this skill when the user wants to practice English vocabulary, learn new technical
+  words, or review previously learned vocabulary. Applies to requests like
+  "/english-coach:vocabulary", "practice vocabulary", "teach me git vocabulary",
+  or "what technical words should I learn".
+disable-model-invocation: true
 ---
 
 The user wants to practice English vocabulary. Provide an interactive vocabulary session.

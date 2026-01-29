@@ -23,10 +23,10 @@ Learn English naturally while using Claude Code. This plugin detects English err
 
 | Command | Description |
 |---------|-------------|
-| `/english:review [text]` | Manually review text for English errors |
-| `/english:progress` | View your learning dashboard and stats |
-| `/english:vocabulary [topic]` | Practice vocabulary (topics: git, api, testing, etc.) |
-| `/english:exercise [topic]` | Get a grammar exercise (topics: articles, prepositions, tenses, etc.) |
+| `/english-coach:review` | Manually review text for English errors |
+| `/english-coach:progress` | View your learning dashboard and stats |
+| `/english-coach:vocabulary` | Practice vocabulary (topics: git, api, testing, etc.) |
+| `/english-coach:exercise` | Get a grammar exercise (topics: articles, prepositions, tenses, etc.) |
 
 ## Configuration
 
@@ -54,10 +54,10 @@ Progress is stored at `~/.claude/english-coach-progress.json`. This file is crea
 | Error Detector | Hook (UserPromptSubmit) | Scans messages for English errors |
 | English Tutor | Agent | Interactive teaching in separate context |
 | English Teaching | Skill | Teaching methodology and grammar references |
-| /english:review | Command | Manual English review |
-| /english:progress | Command | Learning progress dashboard |
-| /english:vocabulary | Command | Vocabulary practice sessions |
-| /english:exercise | Command | Grammar exercises |
+| /english-coach:review | Skill | Manual English review |
+| /english-coach:progress | Skill | Learning progress dashboard |
+| /english-coach:vocabulary | Skill | Vocabulary practice sessions |
+| /english-coach:exercise | Skill | Grammar exercises |
 
 ## Installation
 
@@ -106,17 +106,20 @@ english-coach/
 │   └── hooks.json               # Error detection hook
 ├── agents/
 │   └── english-tutor.md         # Interactive tutor agent
-├── commands/
-│   ├── review.md                # /english:review
-│   ├── progress.md              # /english:progress
-│   ├── vocabulary.md            # /english:vocabulary
-│   └── exercise.md              # /english:exercise
 ├── skills/
-│   └── english-teaching/
-│       ├── SKILL.md             # Teaching methodology
-│       └── references/
-│           ├── russian-english-errors.md
-│           ├── grammar-rules.md
-│           └── memorization-techniques.md
+│   ├── english-teaching/
+│   │   ├── SKILL.md             # Teaching methodology
+│   │   └── references/
+│   │       ├── russian-english-errors.md
+│   │       ├── grammar-rules.md
+│   │       └── memorization-techniques.md
+│   ├── review/
+│   │   └── SKILL.md             # /english-coach:review
+│   ├── progress/
+│   │   └── SKILL.md             # /english-coach:progress
+│   ├── vocabulary/
+│   │   └── SKILL.md             # /english-coach:vocabulary
+│   └── exercise/
+│       └── SKILL.md             # /english-coach:exercise
 └── README.md
 ```

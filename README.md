@@ -19,10 +19,10 @@ Learn English naturally while using Claude Code. This plugin detects English err
 **Commands:**
 | Command | Description |
 |---------|-------------|
-| `/english-coach:review [text]` | Review text for English errors |
+| `/english-coach:review` | Review text for English errors |
 | `/english-coach:progress` | View learning progress |
-| `/english-coach:vocabulary [topic]` | Practice vocabulary |
-| `/english-coach:exercise [topic]` | Grammar exercises |
+| `/english-coach:vocabulary` | Practice vocabulary |
+| `/english-coach:exercise` | Grammar exercises |
 
 ## Installation
 

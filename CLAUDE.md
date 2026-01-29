@@ -25,16 +25,23 @@ plugins/
     skills/
       english-teaching/       # Teaching methodology and techniques
         SKILL.md
+      review/                 # /english-coach:review
+        SKILL.md
+      progress/               # /english-coach:progress
+        SKILL.md
+      vocabulary/             # /english-coach:vocabulary
+        SKILL.md
+      exercise/               # /english-coach:exercise
+        SKILL.md
     hooks/                    # User prompt interception for error detection
-    commands/                 # CLI commands (/review, /progress, /vocabulary)
     README.md
 ```
 
 **Key Components**:
 - **english-tutor agent**: Launched when English errors detected; analyzes errors, explains grammar rules with Russian context, guides self-correction
 - **english-teaching skill**: Provides teaching methodology (Socratic method, hint graduation, memorization techniques, progress tracking)
+- **Skills (user-invocable)**: review, progress, vocabulary, exercise — all with `disable-model-invocation: true` to prevent auto-activation
 - **Hooks**: UserPromptSubmit hook detects errors and triggers tutor agent
-- **Commands**: User-facing CLI for manual review, progress viewing, and vocabulary practice
 <!-- END AUTO-MANAGED -->
 
 ## Conventions
@@ -43,10 +50,11 @@ plugins/
 **Agent Design**:
 - Agents describe when to launch (explicit conditions) and when NOT to launch
 - Use `<example>` blocks with `<commentary>` to illustrate usage
-- Specify model inheritance and available tools
+- Use `model: inherit` to inherit from parent context
+- Declare available tools in frontmatter
 
 **Skill Design**:
-- Skills define reusable methodology and knowledge bases
+- Skills use kebab-case names (e.g., `english-teaching`, not `English Teaching Methodology`)
 - Version-tagged with semantic versioning
 - Reference external materials for detailed content
 
@@ -96,12 +104,12 @@ plugins/
 claude --plugin-dir ./plugins/english-coach
 ```
 
-**Plugin Commands**:
+**Plugin Skills (user-invocable)**:
 ```bash
-/english-coach:review [text]      # Review text for errors
+/english-coach:review             # Review text for errors
 /english-coach:progress           # View learning progress
-/english-coach:vocabulary [topic] # Practice vocabulary
-/english-coach:exercise [topic]   # Grammar exercises
+/english-coach:vocabulary         # Practice vocabulary
+/english-coach:exercise           # Grammar exercises
 ```
 <!-- END AUTO-MANAGED -->
 
@@ -109,6 +117,7 @@ claude --plugin-dir ./plugins/english-coach
 
 <!-- AUTO-MANAGED: git-insights -->
 **Recent Decisions**:
+- `4cbd23f`: Agent model inheritance and skill naming consistency - switched agent to inherit model from context, standardized skill naming to kebab-case
 - `c8e774e`: Initial marketplace with english-coach plugin - established plugin structure with agents, skills, hooks, and commands
 <!-- END AUTO-MANAGED -->
 

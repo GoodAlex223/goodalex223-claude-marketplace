@@ -1,8 +1,12 @@
 ---
 name: exercise
-description: Get a mini-exercise based on your weak areas to practice English grammar and usage
-argument-hint: "[optional: topic like 'articles', 'prepositions', 'tenses']"
-allowed-tools: ["Read", "Write", "Glob"]
+description: >
+  Get a mini-exercise based on your weak areas to practice English grammar and usage.
+  Use this skill when the user wants grammar exercises, practice drills, or targeted
+  practice on specific topics. Applies to requests like "/english-coach:exercise",
+  "give me an exercise", "practice articles", "I want to practice prepositions",
+  or "grammar drill".
+disable-model-invocation: true
 ---
 
 The user wants a practice exercise. Generate a targeted mini-exercise based on their weak areas.
