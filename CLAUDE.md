@@ -35,10 +35,10 @@ plugins/
 ```
 
 **Key Components**:
-- **english-tutor agent**: Launched when English errors detected; analyzes errors, explains grammar rules with Russian context, guides self-correction
+- **english-tutor agent**: Launched ONLY for explicit review requests (/english-coach:review or user asks for thorough review); provides deep analysis with full error categorization, memorization techniques, and guided self-correction
 - **english-teaching skill**: Provides teaching methodology (Socratic method, hint graduation, memorization techniques, progress tracking)
 - **Commands**: review, progress, vocabulary, exercise — no `name` field in frontmatter so the system auto-prefixes with plugin namespace (/english-coach:*)
-- **Hooks**: UserPromptSubmit hook detects errors and triggers tutor agent
+- **Hooks**: UserPromptSubmit hook detects errors and provides INLINE coaching directly in conversation (brief 3-5 sentence guidance, does NOT launch agent)
 <!-- END AUTO-MANAGED -->
 
 ## Conventions
@@ -50,27 +50,34 @@ plugins/
 - Use `model: inherit` to inherit from parent context
 - Declare available tools in frontmatter
 
+**Command Design**:
+- Commands use markdown files in commands/ directory
+- DO NOT include `name` field in frontmatter (system auto-prefixes with plugin namespace)
+- Include `description` and `argument-hint` in frontmatter
+- Declare `allowed-tools` in frontmatter
+
 **Skill Design**:
 - Skills use kebab-case names (e.g., `english-teaching`, not `English Teaching Methodology`)
 - Version-tagged with semantic versioning
 - Reference external materials for detailed content
 
 **Teaching Methodology**:
+- Two-tier approach: Brief inline coaching for automatic detection, deep analysis for manual reviews
 - Socratic method: Guide through hints, never give direct corrections
 - Error categorization: Tier 1 (meaning-breaking) → Tier 2 (pattern) → Tier 3 (surface)
 - Hint graduation: 4 levels from subtle to analogical
 - L1 awareness: Explicitly connect errors to Russian language patterns
+- Inline coaching: 3-5 sentences max, focuses on 1-3 most impactful errors, invites self-correction
 <!-- END AUTO-MANAGED -->
 
 ## Patterns
 
 <!-- AUTO-MANAGED: patterns -->
 **Error Analysis Flow**:
-1. Categorize errors (spelling, grammar, vocabulary, style)
-2. Prioritize by impact (meaning-breaking → pattern → surface)
-3. Explain without giving answers (use hints and questions)
-4. Provide memorization techniques
-5. Challenge user to self-correct
+1. Hook detects errors → Outputs "ENGLISH_ERRORS_DETECTED" with error list and coaching instructions
+2. Main conversation provides inline coaching (3-5 sentences, 1-3 most impactful errors)
+3. For deep analysis: User runs /english-coach:review → Launches english-tutor agent
+4. Agent performs: Categorize errors → Prioritize by impact → Explain with hints → Provide memorization techniques → Challenge self-correction
 
 **Russian-English Error Patterns** (Common in Russian speakers):
 - Article omission/misuse (Russian has no articles)
@@ -114,9 +121,9 @@ claude --plugin-dir ./plugins/english-coach
 
 <!-- AUTO-MANAGED: git-insights -->
 **Recent Decisions**:
+- `d3c3887`: Revert to commands without name field for auto-prefixing - reverted skills/ back to commands/ directory, removed explicit `name` field from command frontmatter to allow system to auto-compose names as english-coach:filename (matching auto-memory pattern)
 - `3440f8b`: Convert commands to skills for consistent namespace prefix - replaced commands/ directory with skills/ (review, progress, vocabulary, exercise) to ensure proper plugin namespace (/english-coach:*) and avoid command registration issues
 - `4cbd23f`: Agent model inheritance and skill naming consistency - switched agent to inherit model from context, standardized skill naming to kebab-case
-- `c8e774e`: Initial marketplace with english-coach plugin - established plugin structure with agents, skills, hooks, and commands
 <!-- END AUTO-MANAGED -->
 
 ---

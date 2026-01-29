@@ -13,11 +13,13 @@ Learn English naturally while using Claude Code. This plugin detects English err
 
 ## How It Works
 
-1. You write a message to Claude Code (with English errors)
-2. The `UserPromptSubmit` hook detects errors automatically
-3. Claude launches the `english-tutor` agent in a separate context
-4. The agent analyzes your errors, explains grammar rules, and asks YOU to correct them
-5. Your main conversation continues normally — English coaching happens on the side
+1. You write messages to Claude Code as you normally work
+2. The `UserPromptSubmit` hook **silently detects** errors and buffers them to `~/.claude/english-coach-buffer.json`
+3. Your workflow is **never interrupted** — no coaching appears automatically
+4. When you're ready, run `/english-coach:review` to get a full analysis of all buffered errors
+5. The english-tutor agent analyzes your errors, explains grammar rules, and challenges you to self-correct
+
+This "collect now, review later" approach keeps your coding flow uninterrupted while still tracking every English mistake for learning.
 
 ## Commands
 
@@ -51,8 +53,8 @@ Progress is stored at `~/.claude/english-coach-progress.json`. This file is crea
 
 | Component | Type | Purpose |
 |-----------|------|---------|
-| Error Detector | Hook (UserPromptSubmit) | Scans messages for English errors |
-| English Tutor | Agent | Interactive teaching in separate context |
+| Error Detector | Hook (UserPromptSubmit) | Silently detects errors and buffers them |
+| English Tutor | Agent | Deep analysis for /english-coach:review |
 | English Teaching | Skill | Teaching methodology and grammar references |
 | /english-coach:review | Command | Manual English review |
 | /english-coach:progress | Command | Learning progress dashboard |
