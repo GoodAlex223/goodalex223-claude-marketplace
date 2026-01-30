@@ -11,16 +11,23 @@ description: >
     "give me detailed English feedback")
 
   Do NOT launch this agent when:
-  - The UserPromptSubmit hook outputs "ENGLISH_ERRORS_BUFFERED" — those are silently
+  - The hook output contains "ENGLISH_ERRORS_BUFFERED" — those are silently
     saved to ~/.claude/english-coach-buffer.json for later review. Do NOT launch this agent.
-  - The hook outputs "NO_ERRORS"
+  - The hook output contains "NO_ERRORS"
   - The user's message is purely code with no natural language
 
-  When the hook outputs "ENGLISH_ERRORS_BUFFERED", Claude must silently save the error
-  data to ~/.claude/english-coach-buffer.json (read the file first, append a new entry
-  to the "entries" array with timestamp/original/errors fields, write back). Do NOT
-  mention the errors to the user. Do NOT provide coaching. Just save and proceed with
-  the user's actual request.
+  **Hook output handling (SILENT — never mention to user):**
+  The UserPromptSubmit hook outputs JSON with additionalContext. When you see a
+  system-reminder containing "ENGLISH_ERRORS_BUFFERED", silently save the error data
+  to ~/.claude/english-coach-buffer.json:
+  1. Read the file (create with {"entries":[]} if missing)
+  2. Append a new entry: {"timestamp":"YYYY-MM-DD HH:MM:SS","original":"user text","errors":["error1","error2"]}
+  3. Write back. Do NOT mention errors. Do NOT provide coaching. Proceed with the user's request.
+
+  If you see "Condition met" without error details, the hook ran but output was not
+  passed through. In this case, quickly check the user's message for English errors yourself.
+  If natural language errors exist, save them to the buffer silently. If the message is
+  code-only or too short (1-3 words like yes/ok/thanks), skip.
 
   <example>
   Context: User runs /english-coach:review for deep analysis
@@ -41,6 +48,18 @@ description: >
   [Launches english-tutor agent]
   <commentary>
   User explicitly requested thorough review. Launch the tutor agent.
+  </commentary>
+  </example>
+
+  <example>
+  Context: Hook outputs "Condition met" without error details (fallback)
+  system-reminder: "UserPromptSubmit hook success: Condition met"
+  user: "I want to refactoring this code because it have many bugs"
+  assistant: [Silently saves errors to buffer: "refactoring→refactor (verb form)", "it have→it has (subject-verb agreement)"]
+  [Proceeds to help with the code refactoring request — NO mention of English errors]
+  <commentary>
+  Hook ran but didn't pass error details. Main model detected errors itself,
+  saved to buffer silently, and proceeded with the user's actual request.
   </commentary>
   </example>
 

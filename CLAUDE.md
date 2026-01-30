@@ -35,10 +35,10 @@ plugins/
 ```
 
 **Key Components**:
-- **english-tutor agent**: Launched ONLY for explicit review requests (/english-coach:review or user asks for thorough review); provides deep analysis with full error categorization, memorization techniques, and guided self-correction
+- **english-tutor agent**: Launched ONLY for explicit review requests (/english-coach:review or user asks for thorough review); provides deep analysis with full error categorization, memorization techniques, and guided self-correction; agent handles buffer-save operations
 - **english-teaching skill**: Provides teaching methodology (Socratic method, hint graduation, memorization techniques, progress tracking)
 - **Commands**: review, progress, vocabulary, exercise — no `name` field in frontmatter so the system auto-prefixes with plugin namespace (/english-coach:*)
-- **Hooks**: UserPromptSubmit hook detects errors and provides INLINE coaching directly in conversation (brief 3-5 sentence guidance, does NOT launch agent)
+- **Hooks**: UserPromptSubmit hook (fast model) SILENTLY detects errors and outputs JSON with additionalContext field containing "ENGLISH_ERRORS_BUFFERED" + errors + original text; if framework passes additionalContext, main Claude reads it and saves to buffer; if only "Condition met" is visible (fallback), main Claude analyzes the message itself and saves errors to buffer — hook does NOT perform file operations
 <!-- END AUTO-MANAGED -->
 
 ## Conventions
@@ -62,22 +62,31 @@ plugins/
 - Reference external materials for detailed content
 
 **Teaching Methodology**:
-- Two-tier approach: Brief inline coaching for automatic detection, deep analysis for manual reviews
+- "Collect now, review later" approach: Hook silently buffers errors without interrupting workflow
 - Socratic method: Guide through hints, never give direct corrections
 - Error categorization: Tier 1 (meaning-breaking) → Tier 2 (pattern) → Tier 3 (surface)
 - Hint graduation: 4 levels from subtle to analogical
 - L1 awareness: Explicitly connect errors to Russian language patterns
-- Inline coaching: 3-5 sentences max, focuses on 1-3 most impactful errors, invites self-correction
+- On-demand review: User triggers deep analysis via /english-coach:review when ready to learn
 <!-- END AUTO-MANAGED -->
 
 ## Patterns
 
 <!-- AUTO-MANAGED: patterns -->
 **Error Analysis Flow**:
-1. Hook detects errors → Outputs "ENGLISH_ERRORS_DETECTED" with error list and coaching instructions
-2. Main conversation provides inline coaching (3-5 sentences, 1-3 most impactful errors)
-3. For deep analysis: User runs /english-coach:review → Launches english-tutor agent
-4. Agent performs: Categorize errors → Prioritize by impact → Explain with hints → Provide memorization techniques → Challenge self-correction
+1. Hook (fast model) detects errors → Outputs JSON with additionalContext: "ENGLISH_ERRORS_BUFFERED\nErrors: error1, error2\nOriginal: user text"
+2. If additionalContext reaches main Claude → Silently saves to ~/.claude/english-coach-buffer.json
+3. If only "Condition met" visible (fallback) → Main Claude analyzes user's message itself, saves errors to buffer
+4. User continues working without distraction — errors accumulated in buffer
+5. User runs /english-coach:review when ready → Main instance reads buffer, launches english-tutor agent
+6. Agent performs: Categorize all buffered errors → Prioritize by impact → Explain with hints → Provide memorization techniques → Challenge self-correction
+7. After review: Buffer cleared, progress file updated
+
+**Architecture Rationale** (commit de7b6fa + hook output fix):
+- Hook prompt outputs JSON with hookSpecificOutput.additionalContext for framework to pass through
+- Fallback: if framework only shows "Condition met", main model performs its own error analysis
+- Buffer-save instructions in agent description, not hook prompt (prevents fast model confusion)
+- Main Claude instance handles all file operations (reading/writing buffer file)
 
 **Russian-English Error Patterns** (Common in Russian speakers):
 - Article omission/misuse (Russian has no articles)
@@ -86,9 +95,9 @@ plugins/
 - False friends ("actual" ≠ "актуальный")
 - Subject-verb agreement flexibility
 
-**Progress Tracking**:
-- JSON file: `~/.claude/english-coach-progress.json`
-- Tracks error patterns, corrections attempted/successful, vocabulary, session history
+**Data Files**:
+- Error buffer: `~/.claude/english-coach-buffer.json` — Temporary storage for detected errors (cleared after review)
+- Progress file: `~/.claude/english-coach-progress.json` — Long-term tracking of error patterns, corrections attempted/successful, vocabulary, session history
 <!-- END AUTO-MANAGED -->
 
 ## Build & Test Commands
@@ -110,10 +119,10 @@ claude --plugin-dir ./plugins/english-coach
 
 **Plugin Commands**:
 ```bash
-/english-coach:review             # Review text for errors
+/english-coach:review [text]      # Review buffered errors or specific text
 /english-coach:progress           # View learning progress
-/english-coach:vocabulary         # Practice vocabulary
-/english-coach:exercise           # Grammar exercises
+/english-coach:vocabulary [topic] # Practice vocabulary
+/english-coach:exercise [topic]   # Grammar exercises
 ```
 <!-- END AUTO-MANAGED -->
 
@@ -121,9 +130,10 @@ claude --plugin-dir ./plugins/english-coach
 
 <!-- AUTO-MANAGED: git-insights -->
 **Recent Decisions**:
+- `de7b6fa`: Simplify hook prompt to prevent fast model confusion - separated concerns between error detection (hook's fast model outputs plain text) and buffer management (main instance saves to file); hook prompt was getting confused by complex instructions mixing output format with file operation instructions
+- `6a43a66`: Silent error buffering with on-demand review - changed from automatic inline coaching to silent buffering (~/.claude/english-coach-buffer.json); errors detected by hook are saved without interrupting workflow, user triggers review via /english-coach:review when ready to learn
 - `d3c3887`: Revert to commands without name field for auto-prefixing - reverted skills/ back to commands/ directory, removed explicit `name` field from command frontmatter to allow system to auto-compose names as english-coach:filename (matching auto-memory pattern)
 - `3440f8b`: Convert commands to skills for consistent namespace prefix - replaced commands/ directory with skills/ (review, progress, vocabulary, exercise) to ensure proper plugin namespace (/english-coach:*) and avoid command registration issues
-- `4cbd23f`: Agent model inheritance and skill naming consistency - switched agent to inherit model from context, standardized skill naming to kebab-case
 <!-- END AUTO-MANAGED -->
 
 ---
