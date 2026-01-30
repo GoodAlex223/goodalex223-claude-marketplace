@@ -1,10 +1,10 @@
 # English Coach
 
-Learn English naturally while using Claude Code. This plugin detects English errors in your messages, teaches grammar rules with Russian-language context, and guides you to self-correct through the Socratic method.
+Learn English naturally while using Claude Code. This plugin captures your natural language text, analyzes it for English errors on demand, teaches grammar rules with Russian-language context, and guides you to self-correct through the Socratic method.
 
 ## Features
 
-- **Automatic Error Detection**: A hook analyzes every message you send and flags English errors
+- **Automatic Text Capture**: A hook captures natural language from every message you send for later review
 - **Interactive Tutoring**: A dedicated agent explains errors, teaches grammar rules, and guides self-correction without giving away answers
 - **Russian-English Focus**: Explanations reference Russian grammar patterns to explain WHY you make specific mistakes
 - **Progress Tracking**: Tracks your errors, improvements, and vocabulary growth over time
@@ -14,12 +14,12 @@ Learn English naturally while using Claude Code. This plugin detects English err
 ## How It Works
 
 1. You write messages to Claude Code as you normally work
-2. The `UserPromptSubmit` hook **silently detects** errors and buffers them to `~/.claude/english-coach-buffer.json`
-3. Your workflow is **never interrupted** — no coaching appears automatically
-4. When you're ready, run `/english-coach:review` to get a full analysis of all buffered errors
-5. The english-tutor agent analyzes your errors, explains grammar rules, and challenges you to self-correct
+2. The `UserPromptSubmit` hook **silently captures** your natural language text and buffers it to `~/.claude/english-coach-buffer.json`
+3. Your workflow is **never interrupted** — no analysis or coaching appears automatically
+4. When you're ready, run `/english-coach:review` to get a full error analysis of all buffered text
+5. The english-tutor agent detects errors, explains grammar rules, and challenges you to self-correct
 
-This "collect now, review later" approach keeps your coding flow uninterrupted while still tracking every English mistake for learning.
+This "collect now, review later" approach keeps your coding flow uninterrupted while capturing all your English text for learning.
 
 ## Commands
 
@@ -39,7 +39,7 @@ The plugin uses two data files:
 User preferences are configured through the progress file. The plugin starts with these defaults:
 - **Native language**: Russian
 - **Proficiency level**: B1-B2 (Intermediate)
-- **Auto-detect**: Enabled (analyzes all messages)
+- **Auto-capture**: Enabled (captures text from all messages)
 
 ### Progress Data
 
@@ -53,7 +53,7 @@ Progress is stored at `~/.claude/english-coach-progress.json`. This file is crea
 
 | Component | Type | Purpose |
 |-----------|------|---------|
-| Error Detector | Hook (UserPromptSubmit) | Silently detects errors and buffers them |
+| Text Capture | Hook (UserPromptSubmit) | Silently captures natural language text and buffers it |
 | English Tutor | Agent | Deep analysis for /english-coach:review |
 | English Teaching | Skill | Teaching methodology and grammar references |
 | /english-coach:review | Command | Manual English review |
@@ -105,7 +105,7 @@ english-coach/
 ├── .claude-plugin/
 │   └── plugin.json              # Plugin manifest
 ├── hooks/
-│   └── hooks.json               # Error detection hook
+│   └── hooks.json               # Text capture hook
 ├── agents/
 │   └── english-tutor.md         # Interactive tutor agent
 ├── commands/

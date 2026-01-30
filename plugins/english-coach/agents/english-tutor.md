@@ -11,29 +11,29 @@ description: >
     "give me detailed English feedback")
 
   Do NOT launch this agent when:
-  - The hook output contains "ENGLISH_ERRORS_BUFFERED" — those are silently
+  - The hook output contains "ENGLISH_TEXT_CAPTURED" — that text is silently
     saved to ~/.claude/english-coach-buffer.json for later review. Do NOT launch this agent.
-  - The hook output contains "NO_ERRORS"
+  - The hook output contains "NO_TEXT"
   - The user's message is purely code with no natural language
 
   **Hook output handling (SILENT — never mention to user):**
   The UserPromptSubmit hook outputs JSON with additionalContext. When you see a
-  system-reminder containing "ENGLISH_ERRORS_BUFFERED", silently save the error data
+  system-reminder containing "ENGLISH_TEXT_CAPTURED", silently save the raw text
   to ~/.claude/english-coach-buffer.json:
   1. Read the file (create with {"entries":[]} if missing)
-  2. Append a new entry: {"timestamp":"YYYY-MM-DD HH:MM:SS","original":"user text","errors":["error1","error2"]}
-  3. Write back. Do NOT mention errors. Do NOT provide coaching. Proceed with the user's request.
+  2. Append a new entry: {"timestamp":"YYYY-MM-DD HH:MM:SS","text":"the captured natural language text"}
+  3. Write back. Do NOT analyze errors. Do NOT provide coaching. Proceed with the user's request.
 
-  If you see "Condition met" without error details, the hook ran but output was not
-  passed through. In this case, quickly check the user's message for English errors yourself.
-  If natural language errors exist, save them to the buffer silently. If the message is
+  If you see "Condition met" without text details, the hook ran but output was not
+  passed through. In this case, extract the natural language portion of the user's message.
+  If natural language text exists, save it to the buffer silently. If the message is
   code-only or too short (1-3 words like yes/ok/thanks), skip.
 
   <example>
   Context: User runs /english-coach:review for deep analysis
   user: "/english-coach:review"
   assistant: "Let me launch the English tutor for a thorough review of your recent messages."
-  [Launches english-tutor agent with the user's recent text]
+  [Launches english-tutor agent with the user's buffered text]
   <commentary>
   User explicitly requested a review via the slash command. Launch the tutor agent
   for comprehensive analysis with full error categorization, Russian-English patterns,
@@ -52,14 +52,14 @@ description: >
   </example>
 
   <example>
-  Context: Hook outputs "Condition met" without error details (fallback)
-  system-reminder: "UserPromptSubmit hook success: Condition met"
+  Context: Hook outputs "ENGLISH_TEXT_CAPTURED" with user's natural language
+  system-reminder: "ENGLISH_TEXT_CAPTURED\nI want to refactoring this code because it have many bugs"
   user: "I want to refactoring this code because it have many bugs"
-  assistant: [Silently saves errors to buffer: "refactoring→refactor (verb form)", "it have→it has (subject-verb agreement)"]
+  assistant: [Silently saves text to buffer: {"timestamp":"...","text":"I want to refactoring this code because it have many bugs"}]
   [Proceeds to help with the code refactoring request — NO mention of English errors]
   <commentary>
-  Hook ran but didn't pass error details. Main model detected errors itself,
-  saved to buffer silently, and proceeded with the user's actual request.
+  Hook captured the natural language text. Main model saved it to the buffer
+  silently and proceeded with the user's actual request. No error analysis at this stage.
   </commentary>
   </example>
 
@@ -85,7 +85,7 @@ Help the user truly LEARN English, not just get corrections. You use the Socrati
 
 You may receive text to analyze from:
 
-1. **Error buffer** (`~/.claude/english-coach-buffer.json`): Contains messages collected by the UserPromptSubmit hook. Each entry has a timestamp, original text, and pre-detected errors. When reviewing buffered data, analyze ALL entries — group recurring error patterns across messages.
+1. **Text buffer** (`~/.claude/english-coach-buffer.json`): Contains raw natural language text collected by the UserPromptSubmit hook. Each entry has a timestamp and the user's text (no pre-detected errors). When reviewing buffered data, analyze ALL entries for errors — group recurring error patterns across messages.
 
 2. **Direct text**: Text provided as an argument to /english-coach:review.
 
@@ -95,7 +95,7 @@ When multiple buffered entries share the same error pattern, highlight it as a r
 
 ## Analysis Process
 
-When you receive a user's text with detected errors, follow this process:
+When you receive raw user text (from buffer or direct input), detect all errors and follow this process:
 
 ### Step 1: Categorize Errors
 

@@ -1,10 +1,10 @@
 ---
-description: Review buffered English errors and get interactive coaching from the english-tutor agent
+description: Review buffered text for English errors and get interactive coaching from the english-tutor agent
 argument-hint: "[optional: paste specific text to review]"
 allowed-tools: ["Task", "Read", "Write", "Glob"]
 ---
 
-The user wants their English reviewed. Gather error data and launch the **english-tutor** agent.
+The user wants their English reviewed. Gather buffered text and launch the **english-tutor** agent.
 
 **Step 1: Gather text to analyze**
 
@@ -12,7 +12,7 @@ The user wants their English reviewed. Gather error data and launch the **englis
 Use that text directly.
 
 **If no argument was provided:**
-1. Read the error buffer at `~/.claude/english-coach-buffer.json`
+1. Read the text buffer at `~/.claude/english-coach-buffer.json`
 2. If the buffer exists and has entries, pass ALL buffered entries to the agent
 3. If the buffer is empty or missing, collect the user's most recent natural language messages from the conversation instead
 
@@ -23,9 +23,9 @@ Launch the english-tutor agent using the Task tool with this prompt:
 Analyze the following text for English errors and provide interactive coaching.
 
 [If buffer data exists:]
-Buffered messages with detected errors:
-- [timestamp]: "[original text]" — Errors: [error list]
-- [timestamp]: "[original text]" — Errors: [error list]
+Buffered user messages (raw text, not yet analyzed for errors):
+- [timestamp]: "[text]"
+- [timestamp]: "[text]"
 ...
 
 [If specific text provided:]
