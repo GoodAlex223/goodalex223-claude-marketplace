@@ -7,7 +7,7 @@ Project-level memory for the English Learning marketplace.
 <!-- AUTO-MANAGED: project-description -->
 Personal Claude Code plugin marketplace focused on English language learning tools. The marketplace provides plugins that help users learn English naturally while coding.
 
-**Primary Plugin**: `english-coach` - Captures user text silently, analyzes English errors on demand, provides interactive tutoring with Russian-language context, and guides self-correction through the Socratic method.
+**Primary Plugin**: `english-coach` - Captures natural language text silently (no error detection in hook), performs all error analysis on demand via /english-coach:review, provides interactive tutoring with Russian-language context, and guides self-correction through the Socratic method.
 <!-- END AUTO-MANAGED -->
 
 <!-- MANUAL -->
@@ -30,15 +30,15 @@ plugins/
     skills/
       english-teaching/       # Teaching methodology and techniques
         SKILL.md
-    hooks/                    # User prompt interception for error detection
+    hooks/                    # User prompt interception for text capture
     README.md
 ```
 
 **Key Components**:
-- **english-tutor agent**: Launched ONLY for explicit review requests (/english-coach:review or user asks for thorough review); performs all error detection and analysis on buffered raw text, provides full error categorization, memorization techniques, and guided self-correction; agent handles buffer-save operations
+- **english-tutor agent**: Launched ONLY for explicit review requests (/english-coach:review or user asks for thorough review); receives raw buffered text (not pre-analyzed), performs all error detection, categorization, and analysis, provides memorization techniques and guided self-correction; agent also handles buffer-save operations when it sees hook output
 - **english-teaching skill**: Provides teaching methodology (Socratic method, hint graduation, memorization techniques, progress tracking)
 - **Commands**: review, progress, vocabulary, exercise — no `name` field in frontmatter so the system auto-prefixes with plugin namespace (/english-coach:*)
-- **Hooks**: UserPromptSubmit hook (fast model) SILENTLY captures natural language text and outputs JSON with hookSpecificOutput.additionalContext field containing "ENGLISH_TEXT_CAPTURED\n[extracted text]"; if framework passes additionalContext, main Claude reads it and saves raw text to buffer; if only "Condition met" is visible (fallback), main Claude extracts natural language from the message and saves to buffer — hook does NOT perform file operations or error analysis
+- **Hooks**: UserPromptSubmit hook (fast model) extracts natural language text (removes code, keeps only natural language) and outputs JSON with hookSpecificOutput.additionalContext field containing "ENGLISH_TEXT_CAPTURED\n[extracted text]" or "NO_TEXT"; if framework passes additionalContext, main Claude saves raw text to buffer; if only "Condition met" is visible (fallback), main Claude extracts natural language and saves to buffer — hook does NOT detect errors or perform analysis, only text extraction
 <!-- END AUTO-MANAGED -->
 
 ## Conventions
@@ -68,27 +68,32 @@ plugins/
 - Hint graduation: 4 levels from subtle to analogical
 - L1 awareness: Explicitly connect errors to Russian language patterns
 - On-demand review: User triggers deep analysis via /english-coach:review when ready to learn
+- Flow mindset: Encourage user to write freely without filtering; more errors = more learning data
+- Spaced repetition: Session scheduling advice based on error pattern frequency and recency
+- Errors during learning: New errors found during tutoring sessions saved to buffer for later review (not corrected inline)
+- Commands use buffer: exercise/vocabulary commands read the buffer alongside progress data when no arguments provided; prioritize by frequency + recency
 <!-- END AUTO-MANAGED -->
 
 ## Patterns
 
 <!-- AUTO-MANAGED: patterns -->
-**Text Capture Flow**:
-1. Hook (fast model) extracts natural language text → Outputs JSON with additionalContext: "ENGLISH_TEXT_CAPTURED\n<extracted text>"
-2. If additionalContext reaches main Claude → Silently saves raw text to ~/.claude/english-coach-buffer.json
+**Text Capture and Review Flow**:
+1. Hook (fast model) extracts natural language text (removes code blocks, inline code, file paths, URLs, CLI commands) → Outputs JSON with additionalContext: "ENGLISH_TEXT_CAPTURED\n<extracted text>" or "NO_TEXT"
+2. If additionalContext reaches main Claude → Silently saves raw text to ~/.claude/english-coach-buffer.json (format: {"entries": [{"timestamp": "...", "text": "..."}]})
 3. If only "Condition met" visible (fallback) → Main Claude extracts natural language from user's message, saves raw text to buffer
-4. User continues working without distraction — text accumulated in buffer
-5. User runs /english-coach:review when ready → Main instance reads buffer, launches english-tutor agent
-6. Agent performs: Detect all errors in buffered text → Categorize → Prioritize by impact → Explain with hints → Provide memorization techniques → Challenge self-correction
-7. After review: Buffer cleared, progress file updated
+4. User continues working without distraction — raw text accumulated in buffer (no error detection yet)
+5. User runs /english-coach:review when ready → Command reads buffer, launches english-tutor agent with all buffered entries
+6. Agent performs: Detect all errors across all buffered entries → Group recurring patterns → Categorize → Prioritize by impact → Explain with Russian-English patterns → Provide memorization techniques → Challenge self-correction
+7. After review: Buffer cleared (written as {"entries":[]}), progress file updated
 
-**Architecture Rationale** (commits 96da206, de7b6fa, 6a43a66):
+**Architecture Rationale** (commits 1435dd4, 96da206, de7b6fa, 6a43a66):
+- Commit 1435dd4: Hook saves raw text only, ALL error detection moved to english-tutor agent at review time (simplifies hook prompt, gives full model control over analysis quality)
 - Hook prompt outputs JSON with hookSpecificOutput.additionalContext for framework to pass through (commit 96da206)
-- Hook only extracts natural language text — no error analysis (keeps fast model prompt simple, commit de7b6fa)
+- Hook only extracts natural language text — no error detection, no error analysis (keeps fast model prompt extremely simple, commit 1435dd4)
 - Fallback: if framework only shows "Condition met", main model extracts natural language itself
-- All error detection and analysis happens at review time by the english-tutor agent (full model, commit de7b6fa)
+- All error detection and analysis happens at review time by the english-tutor agent (full model with proper context, commit 1435dd4)
 - Buffer-save instructions in agent description, not hook prompt (prevents fast model confusion)
-- Main Claude instance handles all file operations (reading/writing buffer file)
+- Main Claude instance (or agent) handles all file operations (reading/writing buffer file)
 
 **Russian-English Error Patterns** (Common in Russian speakers):
 - Article omission/misuse (Russian has no articles)
@@ -98,7 +103,7 @@ plugins/
 - Subject-verb agreement flexibility
 
 **Data Files**:
-- Text buffer: `~/.claude/english-coach-buffer.json` — Temporary storage for captured user text (cleared after review)
+- Text buffer: `~/.claude/english-coach-buffer.json` — Temporary storage for captured raw user text (format: {"entries": [{"timestamp": "...", "text": "..."}]}); cleared after review
 - Progress file: `~/.claude/english-coach-progress.json` — Long-term tracking of error patterns, corrections attempted/successful, vocabulary, session history
 <!-- END AUTO-MANAGED -->
 
@@ -132,10 +137,10 @@ claude --plugin-dir ./plugins/english-coach
 
 <!-- AUTO-MANAGED: git-insights -->
 **Recent Decisions**:
-- `96da206`: Hook output format to JSON additionalContext with fallback - hook now outputs proper JSON structure with hookSpecificOutput.additionalContext field for framework compatibility; framework passes additionalContext to main Claude instance which saves text to buffer; maintains fallback for older framework versions
+- `1435dd4`: Save raw text in hook, analyze only on review command - hook now saves ONLY raw extracted natural language text to buffer without any error detection; ALL error analysis moved to english-tutor agent at /english-coach:review time; simplifies hook prompt (fast model only extracts text), gives full model complete control over analysis quality and context
+- `96da206`: Hook output format to JSON additionalContext with fallback - hook outputs proper JSON structure with hookSpecificOutput.additionalContext field for framework compatibility; framework passes additionalContext to main Claude instance which saves text to buffer; maintains fallback for older framework versions
 - `de7b6fa`: Simplify hook prompt to prevent fast model confusion - separated concerns between text extraction (hook's fast model outputs JSON) and buffer management (main instance saves to file); removed error detection from hook entirely, moved to english-tutor agent at review time
 - `6a43a66`: Silent error buffering with on-demand review - changed from automatic inline coaching to silent buffering (~/.claude/english-coach-buffer.json); text captured by hook is saved without interrupting workflow, user triggers review via /english-coach:review when ready to learn
-- `d3c3887`: Revert to commands without name field for auto-prefixing - reverted skills/ back to commands/ directory, removed explicit `name` field from command frontmatter to allow system to auto-compose names as english-coach:filename (matching auto-memory pattern)
 <!-- END AUTO-MANAGED -->
 
 ---

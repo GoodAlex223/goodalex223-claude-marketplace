@@ -43,6 +43,13 @@ For each pattern, show:
 **Recent Sessions:**
 - Last 5 sessions with dates and brief summaries
 
-3. **End with an encouraging note** about overall progress trend and suggest next steps.
+**Next Session Recommendation:**
+Based on the progress data, suggest when and what to review next:
+- Calculate days since last session
+- Identify error patterns due for review (using spaced repetition: new patterns → review in 1 day, recurring → 2-3 days, improving → 1 week)
+- Suggest a specific next action, e.g.: "Your articles pattern was last reviewed 3 days ago and is still recurring — try `/english-coach:exercise articles` today." or "Great progress on prepositions! No need to review for another week."
+- If there are buffered messages waiting, mention: "You have [N] messages in the buffer — run `/english-coach:review` when you're ready."
+
+3. **End with an encouraging note** about overall progress trend and the next session suggestion.
 
 **Important:** Present data in a clear, visual format using tables and bullet points. Keep the tone positive and motivating — focus on progress, not just problems.

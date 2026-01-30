@@ -8,10 +8,18 @@ The user wants to practice English vocabulary. Provide an interactive vocabulary
 
 **Steps:**
 
-1. **Read the progress file** at `~/.claude/english-coach-progress.json` to get:
+1. **Gather learning context** from two sources:
+
+   **A. Progress file** (`~/.claude/english-coach-progress.json`):
    - Previously learned vocabulary
    - Words the user has struggled with
    - Error history for vocabulary-related mistakes
+
+   **B. Text buffer** (`~/.claude/english-coach-buffer.json`):
+   - Scan recent buffered text for vocabulary-related issues (wrong word choice, false friends, unnatural phrasing)
+   - Use these real-world mistakes to inform which words to focus on
+
+   **Prioritization**: Words that the user misuses in real messages (buffer) take priority over general topic words. Words that appear in both buffer errors AND progress history are highest priority for reinforcement.
 
 2. **Determine the session type:**
 
@@ -26,8 +34,9 @@ The user wants to practice English vocabulary. Provide an interactive vocabulary
      - A related word or synonym to expand vocabulary
 
    **If no argument was provided:**
-   - Review words from previous sessions that need reinforcement
-   - If no previous sessions, start with common technical English words that Russian speakers often misuse
+   - First check the buffer for recent vocabulary mistakes — build the session around those
+   - Then add words from previous sessions that need reinforcement
+   - If both are empty, start with common technical English words that Russian speakers often misuse
 
 3. **Interactive practice round:**
    After presenting the words, give the user 3-5 fill-in-the-blank exercises:
@@ -48,5 +57,7 @@ The user wants to practice English vocabulary. Provide an interactive vocabulary
 - **Testing**: coverage, assertion, mock, stub, regression, flaky
 - **Project Management**: milestone, sprint, backlog, blocker, deliverable
 - **Communication**: clarify, elaborate, summarize, prioritize, escalate
+
+**Flow Mindset:** During the practice round, encourage the user to answer quickly without overthinking. Say something like: "Write the first word that comes to mind — speed matters more than perfection here. The more mistakes you make, the more we learn about what to practice." If the user's responses contain extra English errors beyond the exercise, note them briefly at the end and save to buffer for future review.
 
 **Important:** Make the session interactive and practical. Use real coding scenarios the user would encounter. Keep it focused — quality over quantity.
