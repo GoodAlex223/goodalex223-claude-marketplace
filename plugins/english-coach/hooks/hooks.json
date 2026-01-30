@@ -7,7 +7,7 @@
         "hooks": [
           {
             "type": "prompt",
-            "prompt": "Extract natural language text from the user's message.\n\nRules:\n- REMOVE code blocks, inline code, file paths, URLs, CLI commands, technical identifiers\n- KEEP only natural language text (English sentences, phrases, explanations)\n- If the message is ONLY code or very short (1-3 words like yes/ok/thanks) → output the no-text JSON below\n\nYou MUST output ONLY valid JSON, nothing else. Pick one:\n\nIf natural language found:\n{\"hookSpecificOutput\":{\"hookEventName\":\"UserPromptSubmit\",\"additionalContext\":\"ENGLISH_TEXT_CAPTURED\\n[the extracted natural language text]\"}}\n\nIf no natural language:\n{\"hookSpecificOutput\":{\"hookEventName\":\"UserPromptSubmit\",\"additionalContext\":\"NO_TEXT\"}}",
+            "prompt": "OUTPUT ONLY JSON. No explanation. No reasoning. No commentary.\n\nLook at the user's message. Extract English natural language sentences. Ignore code, file paths, URLs, commands.\n\nIf short (1-3 words) or only code, output:\n{\"ok\":true,\"hookSpecificOutput\":{\"hookEventName\":\"UserPromptSubmit\",\"additionalContext\":\"NO_TEXT\"}}\n\nOtherwise output:\n{\"ok\":true,\"hookSpecificOutput\":{\"hookEventName\":\"UserPromptSubmit\",\"additionalContext\":\"ENGLISH_TEXT_CAPTURED\\n[paste the English text here]\"}}\n\nNEVER set ok to false. NEVER output anything except one of these two JSON objects.",
             "timeout": 15
           }
         ]
