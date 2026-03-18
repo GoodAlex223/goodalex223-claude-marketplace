@@ -1,0 +1,8 @@
+{
+  "name": "workflow",
+  "version": "1.0.0",
+  "description": "Automated dev→review→merge workflow with session management",
+  "author": {
+    "name": "Alexey Minakov"
+  }
+}
