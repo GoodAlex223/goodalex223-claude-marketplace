@@ -24,13 +24,16 @@ You receive these variables from the caller:
 
 ### Step 1: Implement the Feature
 
-Invoke the `feature-dev:feature-dev` skill via the Skill tool, passing the task title and description as arguments. This runs the full guided development flow (discovery, codebase exploration, clarifying questions, architecture, implementation, quality review).
+**IMPORTANT: Use EXACTLY the skill `feature-dev:feature-dev` via the Skill tool.**
+Do NOT use any other skill or command for implementation (not `superpowers:*`, not `code-architect`, not `code-explorer`, not any Agent subagent_type). The ONLY correct invocation is:
 
-Example:
 ```
-Skill: feature-dev:feature-dev
-Args: "<task title>: <task description>"
+Skill tool:
+  skill: "feature-dev:feature-dev"
+  args: "<task title>: <task description>"
 ```
+
+This runs the full guided development flow (discovery, codebase exploration, clarifying questions, architecture, implementation, quality review).
 
 Let the feature-dev command drive implementation. It will ask the user clarifying questions — let those pass through.
 
@@ -121,6 +124,7 @@ End with a clear summary:
 
 ## Important Rules
 
+- **ONLY use `feature-dev:feature-dev` for implementation** — no other skills, agents, or subagent types
 - Follow all conventions from the user's CLAUDE.md (English only, commit format, task completion docs)
 - Never skip the test step — always verify before committing
 - Keep code and documentation commits separate

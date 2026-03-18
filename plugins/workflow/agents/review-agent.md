@@ -16,11 +16,13 @@ Extract the PR number and branch name from the prompt. If either is missing, out
 
 ### Step 2: Run Code Review
 
-Invoke the `code-review` command via the Skill tool to analyze the PR:
+**IMPORTANT: Use EXACTLY the skill `code-review:code-review` via the Skill tool.**
+Do NOT use any other skill or command for review (not `superpowers:requesting-code-review`, not `pr-review-toolkit:code-reviewer`, not `coderabbit:code-review`, not any Agent subagent_type like `superpowers:code-reviewer` or `pr-review-toolkit:code-reviewer`). The ONLY correct invocation is:
 
 ```
-Skill: code-review:code-review
-Args: <PR number>
+Skill tool:
+  skill: "code-review:code-review"
+  args: "<PR number>"
 ```
 
 This command performs multi-agent code review with confidence scoring and returns findings.
