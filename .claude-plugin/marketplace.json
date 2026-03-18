@@ -4,8 +4,8 @@
     "name": "goodalex223"
   },
   "metadata": {
-    "description": "Personal Claude Code plugin marketplace by goodalex223. Plugins for learning English while coding.",
-    "version": "1.0.0"
+    "description": "Personal Claude Code plugin marketplace by goodalex223. Plugins for learning English while coding and development workflow automation.",
+    "version": "1.1.0"
   },
   "plugins": [
     {
@@ -19,6 +19,18 @@
       "keywords": ["english", "learning", "grammar", "vocabulary", "education"],
       "category": "education",
       "tags": ["english", "language-learning", "grammar", "russian"]
+    },
+    {
+      "name": "workflow",
+      "source": "./plugins/workflow",
+      "description": "Automated dev-review-merge workflow with session management. Single-chat flow: branch, feature-dev, tests, PR, code review, fix loop, merge, learning backlog.",
+      "version": "1.0.0",
+      "author": {
+        "name": "Alexey Minakov"
+      },
+      "keywords": ["workflow", "automation", "dev", "review", "merge", "session"],
+      "category": "development",
+      "tags": ["workflow", "automation", "code-review", "session-management"]
     }
   ]
 }
