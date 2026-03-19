@@ -53,6 +53,7 @@ Verify these files/directories exist in the current project:
 docs/planning/TODO.md
 docs/planning/DONE.md
 docs/planning/BACKLOG.md
+docs/planning/plans/
 docs/archive/plans/
 ```
 
@@ -100,6 +101,13 @@ Produce two lists:
 - **Active & undocumented**: MCP namespaces available in session but not mentioned in CLAUDE.md
 - **Documented & missing**: MCP servers mentioned in CLAUDE.md but not found in active tool list
 
+## Check 8: Automation Recommendations
+
+Check if the skill `claude-code-setup:claude-automation-recommender` is available in the current session's skills list.
+
+- **If available**: Suggest: "For deeper automation analysis (hooks, subagents, skills, MCP servers), run `/claude-code-setup:claude-automation-recommender`"
+- **If not available**: Suggest: "Consider installing the `claude-code-setup` plugin (`claude-code-setup@claude-plugins-official`) for automated recommendations on hooks, subagents, skills, and MCP servers tailored to this project"
+
 ## Report
 
 Present all results in a single block:
@@ -130,6 +138,7 @@ Also available (not required by workflow):
 
 ### Project Structure
 - [x] docs/planning/TODO.md
+- [x] docs/planning/plans/
 - [ ] docs/planning/BACKLOG.md (MISSING — create it)
 ...
 
@@ -153,6 +162,11 @@ MCP active, not referenced in CLAUDE.md:
 
 MCP referenced in CLAUDE.md, not active:
   • (none)
+
+### Automation Recommendations
+💡 For deeper analysis, run `/claude-code-setup:claude-automation-recommender`
+   — OR —
+📦 Install `claude-code-setup` plugin: `claude-code-setup@claude-plugins-official`
 
 ### Summary
 N/N checks passed. [Ready to use /workflow:dev | Fix issues above first]
