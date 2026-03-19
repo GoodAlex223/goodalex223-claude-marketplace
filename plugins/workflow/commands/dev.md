@@ -52,16 +52,22 @@ Execute the following phases in order. Stop immediately at any phase that fails 
 
 ## Phase 2 — Development
 
-Launch the dev agent to implement the feature:
+**⚠️ CRITICAL: You MUST use the Agent tool with `subagent_type: "workflow:dev-agent"`. Do NOT use a generic agent. Do NOT inline implementation instructions. Do NOT use any other subagent_type. The dev-agent internally calls `feature-dev:feature-dev` — if you bypass it, the entire skill chain breaks.**
+
+Use the **Agent tool** with these exact parameters:
+
+- `subagent_type`: `"workflow:dev-agent"`
+- `description`: `"Implement <task title>"`
+- `prompt`: the text block below (fill in the placeholders)
 
 ```
-Agent: workflow:dev-agent
-
 Task title: <task title>
 Task description: <full description from TODO.md>
 Branch name: <branch-name>
 Plan file path: <path if found in Phase 1, otherwise "none">
 ```
+
+**The prompt must contain ONLY these four fields.** Do not add implementation details, file lists, or instructions — the dev-agent reads CLAUDE.md and uses feature-dev:feature-dev for all implementation decisions.
 
 Wait for the dev agent to complete. Read its final output and extract:
 - **PR number** (from the `PR: #<number>` line)
@@ -72,14 +78,20 @@ If the dev agent output indicates failure (no PR number, error messages, or expl
 
 ## Phase 3 — Review
 
-Launch the review agent to review the PR:
+**⚠️ CRITICAL: You MUST use the Agent tool with `subagent_type: "workflow:review-agent"`. Do NOT use a generic agent. Do NOT write review instructions yourself. The review-agent internally calls `code-review:code-review` — if you bypass it, the review skill chain breaks.**
+
+Use the **Agent tool** with these exact parameters:
+
+- `subagent_type`: `"workflow:review-agent"`
+- `description`: `"Review PR #<number>"`
+- `prompt`: the text block below (fill in the placeholders)
 
 ```
-Agent: workflow:review-agent
-
 PR number: <PR number from Phase 2>
 Branch name: <branch-name>
 ```
+
+**The prompt must contain ONLY these two fields.** Do not add review criteria or instructions — the review-agent handles everything.
 
 Wait for the review agent to complete. Read the `REVIEW_STATUS` from its output:
 
@@ -93,11 +105,12 @@ When the review agent found issues, re-launch the dev agent to fix them. Track t
 
 ### Fix Cycle
 
-1. Launch the dev agent with fix context:
+1. Use the **Agent tool** with `subagent_type: "workflow:dev-agent"`:
+
+   - `description`: `"Fix review issues (cycle <N>)"`
+   - `prompt`:
 
    ```
-   Agent: workflow:dev-agent
-
    Task title: Fix review issues (cycle <N>)
    Task description: The code review found the following issues that need to be fixed:
 
@@ -108,11 +121,12 @@ When the review agent found issues, re-launch the dev agent to fix them. Track t
    Plan file path: none
    ```
 
-2. After the dev agent completes, re-launch the review agent:
+2. After the dev agent completes, use the **Agent tool** with `subagent_type: "workflow:review-agent"`:
+
+   - `description`: `"Re-review PR #<number> (cycle <N>)"`
+   - `prompt`:
 
    ```
-   Agent: workflow:review-agent
-
    PR number: <PR number>
    Branch name: <branch-name>
    ```
