@@ -9,17 +9,17 @@ Run all checks below and report results. Do NOT stop on failures — collect all
 
 ## Check 1: Required Plugins
 
-Verify these plugins are listed in the available skills (check the system reminder for available skills):
+Verify these three plugins are listed in the available skills (check the system reminder for available skills):
 
 | Plugin | Required Skill | Status |
 |--------|---------------|--------|
 | feature-dev | `feature-dev:feature-dev` | ? |
 | code-review | `code-review:code-review` | ? |
-| superpowers | `superpowers:writing-plans` | ? |
 | auto-memory | `auto-memory:sync` | ? |
-| pr-review-toolkit | `pr-review-toolkit:review-pr` | ? |
 
-Mark each as FOUND or MISSING based on the skills list in the system context.
+Mark each as FOUND or MISSING. These are critical — missing any will break the workflow.
+
+Then scan the full skills list and report any additional plugins you find (beyond the three required above) under "Also available". Do not hardcode a list — discover dynamically from the system context.
 
 ## Check 2: CLI Tools
 
@@ -113,7 +113,10 @@ Present all results in a single block:
 ### Required Plugins
 - [x] feature-dev:feature-dev
 - [ ] code-review:code-review (MISSING — install via: ...)
-...
+- [x] auto-memory:sync
+
+Also available (not required by workflow):
+  • superpowers, pr-review-toolkit, coderabbit, ...  ← discovered dynamically
 
 ### CLI Tools
 - [x] git (2.x.x)
@@ -139,7 +142,7 @@ Present all results in a single block:
 Build:   ✅ npm (v10.x)  ✅ node (v20.x)  ✅ npx (v10.x)
 Test:    ✅ git (v2.x)   ✅ gh (v2.x)
 Server:  ✅ python (v3.x)
-         ❌ playwright CLI — not found as standalone CLI; invoked via `npm test` (expected)
+         ⚪ playwright CLI — not found as standalone; invoked via `npm test` (expected)
 
 **Available but not in docs:**
 CLI:  • curl (v7.x)   • python3 (v3.x)   • jq (v1.x)
