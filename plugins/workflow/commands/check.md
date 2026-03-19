@@ -41,12 +41,9 @@ From the `gh auth status` output, verify:
 
 ## Check 4: MCP Servers
 
-Check if these MCP tools are available (look in available tools/deferred tools):
+Read the project's `CLAUDE.md` and find the MCP Servers section (table listing server names). For each MCP server documented there, check whether a matching `mcp__*` tool is available in your current session (look in available tools and deferred tools for any tool whose namespace matches the server name).
 
-| MCP Server | Check Tool | Status |
-|------------|-----------|--------|
-| memory | `mcp__memory__search_nodes` | ? |
-| github | `mcp__github__get_file_contents` | ? |
+Present all documented servers with their status. Do not hardcode a list — discover from CLAUDE.md dynamically.
 
 ## Check 5: Project Structure
 
@@ -123,9 +120,12 @@ Also available (not required by workflow):
 - [x] gh (2.x.x, authenticated)
 ...
 
-### MCP Servers
-- [x] memory
-- [ ] github (MISSING)
+### MCP Servers (from CLAUDE.md)
+- [x] memory (mcp__memory__*)
+- [x] context7 (mcp__context7__*)
+- [x] playwright (mcp__playwright__*)
+- [ ] github (MISSING)          ← example; all discovered from CLAUDE.md
+- [x] chrome-devtools (mcp__plugin_chrome-devtools-mcp__*)
 ...
 
 ### Project Structure
