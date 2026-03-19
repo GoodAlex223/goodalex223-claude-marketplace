@@ -1,5 +1,5 @@
 ---
-allowed-tools: Bash(gh auth status:*), Bash(git --version:*), Bash(gh --version:*), Bash(node --version:*), Bash(npm --version:*), Read, Glob, Grep
+allowed-tools: Bash, Read, Glob, Grep
 description: Verify all dependencies for the workflow plugin are properly configured
 ---
 
@@ -65,9 +65,47 @@ Use Glob to check.
 
 Read `.claude/auto-memory/config.json` if it exists. Report the current `triggerMode` value. Recommend `gitmode` for use with the workflow plugin (fewer interruptions during agent work).
 
+## Check 7: Project Tool Inventory
+
+This section has two parts: (a) tools referenced in project documentation and their current availability, and (b) tools available in the environment that are not mentioned in the documentation.
+
+### 7a. Documented Tools
+
+Read the project's `CLAUDE.md` (in the current working directory). Also read any locally present linked files it references (e.g. `WORKFLOW.md`, `PROJECT.md`, files under `POLICIES/` or `LANGUAGES/` if they exist — use Glob to find them). Do NOT read `~/.claude/CLAUDE.md` for this step; focus on the project's own documentation.
+
+Extract every CLI tool or command mentioned. Look for:
+- Shell commands in fenced code blocks (e.g. `npm run build`, `python -m http.server`, `npx serve`)
+- Tool names mentioned inline in text (e.g. playwright, docker, terraform)
+- Build tools, test runners, linters, dev servers, deployment tools, version control tools
+
+For each unique CLI tool discovered, run:
+```bash
+command -v <tool> 2>/dev/null && <tool> --version 2>/dev/null | head -1 || echo "NOT FOUND"
+```
+
+Group results by category (Build, Test, Dev Server, VCS, Deploy, etc.).
+
+### 7b. Available But Undocumented
+
+**CLI tools**: Probe for common development tools NOT already found in 7a. Run `command -v` for each:
+
+```
+docker, curl, wget, jq, python3, ruby, go, cargo, make, terraform, kubectl, deno, bun, pnpm, yarn
+```
+
+Only show tools that are actually installed (skip NOT FOUND entries to keep output clean). Flag each as "available, not documented".
+
+**MCP servers**: You know which MCP tools are available in the current session from your tool list (look for `mcp__*` prefixes in available/deferred tools). Extract the namespace from each (e.g. `mcp__memory__search_nodes` → `memory`, `mcp__github__get_file_contents` → `github`, `mcp__playwright__browser_navigate` → `playwright`).
+
+Also read the project's `CLAUDE.md` to find which MCP servers are explicitly mentioned or referenced (e.g. "memory MCP", "github MCP", `.mcp.json` references).
+
+Produce two lists:
+- **Active & undocumented**: MCP namespaces available in session but not mentioned in CLAUDE.md
+- **Documented & missing**: MCP servers mentioned in CLAUDE.md but not found in active tool list
+
 ## Report
 
-Present results as:
+Present all results in a single block:
 
 ```
 ## Workflow Plugin Health Check
@@ -93,7 +131,25 @@ Present results as:
 ...
 
 ### Auto-Memory
-- Mode: gitmode (recommended)
+- Mode: gitmode (recommended ✅)
+
+### Tool Inventory
+
+**Documented in CLAUDE.md:**
+Build:   ✅ npm (v10.x)  ✅ node (v20.x)  ✅ npx (v10.x)
+Test:    ✅ git (v2.x)   ✅ gh (v2.x)
+Server:  ✅ python (v3.x)
+         ❌ playwright CLI — not found as standalone CLI; invoked via `npm test` (expected)
+
+**Available but not in docs:**
+CLI:  • curl (v7.x)   • python3 (v3.x)   • jq (v1.x)
+      (none of these are required — listed for awareness)
+
+MCP active, not referenced in CLAUDE.md:
+  • playwright, chrome-devtools, context7, figma
+
+MCP referenced in CLAUDE.md, not active:
+  • (none)
 
 ### Summary
 N/N checks passed. [Ready to use /workflow:dev | Fix issues above first]
